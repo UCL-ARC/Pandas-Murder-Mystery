@@ -26,35 +26,25 @@ facebook_event_check_in = pd.read_csv("facebook_event_check_in.zip")
 get_fit_now_check_in = pd.read_csv("get_fit_now_check_in.zip")
 crime_scene_report = pd.read_csv("crime_scene_report.zip")
 
-# find out more about the data frames
+# view crime_scene_report df
 # %%
-drivers_license.info()
-income.info()
-get_fit_now_members.info()
-interview.info()
-person.info()
-facebook_event_check_in.info()
-get_fit_now_check_in.info()
+
 crime_scene_report.info()
+print(crime_scene_report)
 
 
 # %% [markdown]
 # ![image.png](https://mystery.knightlab.com/schema.png)
 
 # %%
-deposition = (
-    crime_scene_report.assign(
-        date=pd.to_datetime(crime_scene_report["date"], format="%Y%m%d")
-    )
-    .set_index("date")
-    .loc["1/15/2018"]
-    .query("type == 'murder' and city == 'SQL City'")
-)
+deposition = crime_scene_report.loc[(crime_scene_report['date'] == 20180115) & (crime_scene_report['type'] == "murder") & (crime_scene_report['city'] == "SQL City")]
 display(deposition)
+
+
 
 # %%
 display(Markdown("## Clue 2"))
-display(Markdown(deposition["description"].values[0]))
+display(Markdown(display(deposition)))
 
 
 # %%
