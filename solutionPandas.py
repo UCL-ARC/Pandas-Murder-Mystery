@@ -1,5 +1,5 @@
 # %% [markdown]
-# # SQL Murder Mystery
+# # Pandas Murder Mystery
 #
 # A crime has taken place and the detective needs your help. The detective gave
 # you the crime scene report, but you somehow lost it.
@@ -8,9 +8,9 @@
 #
 # You vaguely remember that the crime was a **murder** that occurred sometime on
 # **Jan. 15, 2018** and that it took place in **SQL City**. Start by retrieving
-# the corresponding crime scene report from the police department's database. If
+# the corresponding crime scene report from the police department's files. If
 # you want to get the most out of this mystery, try to work through it only
-# using your SQL environment and refrain from using a notepad.
+# using your Python environment and refrain from using a notepad.
 
 # %%
 import pandas as pd
@@ -26,17 +26,17 @@ facebook_event_check_in = pd.read_csv("facebook_event_check_in.zip")
 get_fit_now_check_in = pd.read_csv("get_fit_now_check_in.zip")
 crime_scene_report = pd.read_csv("crime_scene_report.zip")
 
+# find out more about the data frames
 # %%
-db = [
-    drivers_license,
-    income,
-    get_fit_now_members,
-    interview,
-    person,
-    facebook_event_check_in,
-    get_fit_now_check_in,
-    crime_scene_report,
-]
+drivers_license.info()
+income.info()
+get_fit_now_members.info()
+interview.info()
+person.info()
+facebook_event_check_in.info()
+get_fit_now_check_in.info()
+crime_scene_report.info()
+
 
 # %% [markdown]
 # ![image.png](https://mystery.knightlab.com/schema.png)
