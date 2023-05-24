@@ -44,7 +44,7 @@ display(deposition)
 
 # %%
 display(Markdown("## Clue 2"))
-display(Markdown(display(deposition)))
+display(Markdown(display(deposition['description'])))
 
 
 # %%
