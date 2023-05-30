@@ -39,35 +39,28 @@ print(crime_scene_report)
 # %%
 deposition = crime_scene_report.loc[(crime_scene_report['date'] == 20180115) & (crime_scene_report['type'] == "murder") & (crime_scene_report['city'] == "SQL City")]
 display(deposition)
-
+# %%
+# set Pandas to return upto 250chars to prevent text from trunccating
+pd.set_options("max_colwidth",250)
 
 
 # %%
-display(Markdown("## Clue 2"))
-display(Markdown(display(deposition['description'])))
+display("## Clue 2")
+display(deposition['description'])
 
 
+# Identify the witness who lives in the last house on Northwestern Dr
+person.info()
+print(person)
 # %%
-def namestr(obj, namespace=locals()) -> str:
-    return [name for name in namespace if namespace[name] is obj][0]
-
-
-# %%
-def print_table_names():
-    print([namestr(d) for d in db])
-
-
-# %%
-for d in db:
-    print(namestr(d))
-    display(d.sample())
-    print()
-
-# %%
-witness_1 = person.loc[person["address_street_name"] == "Northwestern Dr"].loc[
-    lambda df: df["address_number"] == df["address_number"].max()
+nwd_addresses = person.loc[person["address_street_name"] == "Northwestern Dr"]
 ]
-display(witness_1)
+display(nwd_addresses)
+
+#narrow down
+witness_1 = nwd_addresses.loc[
+    (nwd_addresses['address_street_name'] == "Northwestern Dr") 
+    & (nwd_addresses['address_number'] == nwd_addresses['address_number'].max())]
 
 # %%
 witness_2 = person.loc[
@@ -81,8 +74,8 @@ witnesses = pd.concat([witness_1, witness_2])
 
 # %%
 clue_3 = interview.loc[interview["person_id"].isin(witnesses["id"])].merge(
-    witnesses, left_on="person_id", right_on="id"
-)
+    witnesses, left_on="person_id", right_on="id")
+
 
 # %%
 display(Markdown("## Clue 3"))
