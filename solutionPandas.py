@@ -60,7 +60,8 @@ display(nwd_addresses)
 #narrow down
 witness_1 = nwd_addresses.loc[
     (nwd_addresses['address_street_name'] == "Northwestern Dr") 
-    & (nwd_addresses['address_number'] == nwd_addresses['address_number'].max())]
+    & (nwd_addresses['address_number'] == nwd_addresses['address_number'].max())
+]
 
 # %%
 witness_2 = person.loc[
@@ -73,43 +74,39 @@ display(witness_2)
 witnesses = pd.concat([witness_1, witness_2])
 
 # %%
-clue_3 = interview.loc[interview["person_id"].isin(witnesses["id"])].merge(
-    witnesses, left_on="person_id", right_on="id")
+clue_3 = interview.loc[interview["person_id"].isin(witnesses["id"])]
 
 
 # %%
-display(Markdown("## Clue 3"))
-for t in clue_3["transcript"]:
-    display(Markdown(t))
-    print()
+display("## Clue 3")
+display(clue_3)
 
 # %%
-suspect = (
+# identify suspect member(s)
+identify_suspects = (
     get_fit_now_members.loc[
         (get_fit_now_members["membership_status"] == "gold")
         & (get_fit_now_members["id"].str[:3] == "48Z")
-    ]
-    .merge(person, left_on="person_id", right_on="id", suffixes=["_gym", "_person"])
-    .merge(
-        drivers_license.loc[drivers_license["plate_number"].str.contains("H42W")],
-        left_on="license_id",
-        right_on="id",
-        suffixes=["_person", "_driver"],
-    )
-).merge(
-    get_fit_now_check_in.assign(
-        check_in_date=pd.to_datetime(
-            get_fit_now_check_in["check_in_date"], format="%Y%m%d"
-        ),
-    )
-    .set_index("check_in_date")
-    .loc["1/9/2018"],
-    left_on="id_gym",
-    right_on="membership_id",
-)
+    ])
+
 
 # %%
-display(suspect.T)
+display(identify_suspects)
+identify_suspects.info()
+get_fit_now_check_in.info()
+
+#check suspects were in gym
+confirm_suspects = get_fit_now_check_in.loc[get_fit_now_check_in['membership_id'].isin(identify_suspects["id"])
+                                   & (get_fit_now_check_in['check_in_date'] == 20180109)]
+
+display(confirm_suspects)
+
+#identify car and driver
+confirm_suspects.info()
+drivers_license.info()
+
+identify_driver = drivers_license.loc[(drivers_license['plate_number'].str.contains("H42W")) & (drivers_license['gender'] == "male")]
+display(identify_driver)
 
 # %%
 display(Markdown("## Clue 4"))
