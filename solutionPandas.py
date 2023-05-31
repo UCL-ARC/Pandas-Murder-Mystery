@@ -82,41 +82,35 @@ display("## Clue 3")
 display(clue_3)
 
 # %%
-# identify suspect member(s)
-identify_suspects = (
-    get_fit_now_members.loc[
-        (get_fit_now_members["membership_status"] == "gold")
-        & (get_fit_now_members["id"].str[:3] == "48Z")
-    ])
-
-
-# %%
-display(identify_suspects)
-identify_suspects.info()
-get_fit_now_check_in.info()
-
-#check suspects were in gym
-confirm_suspects = get_fit_now_check_in.loc[get_fit_now_check_in['membership_id'].isin(identify_suspects["id"])
-                                   & (get_fit_now_check_in['check_in_date'] == 20180109)]
-
-display(confirm_suspects)
 
 #identify car and driver
 confirm_suspects.info()
 drivers_license.info()
 
-identify_driver = drivers_license.loc[(drivers_license['plate_number'].str.contains("H42W")) & (drivers_license['gender'] == "male")]
+# rename drivers_license['id'] to 'license_id'] so can be merged with person data
+drivers_license.rename(columns = {'id':'license_id'}, inplace = True)
+
+#merge person and drivers_license
+driver_person_info = pd.merge(person, drivers_license, on=['license_id'])
+
+# identify driver
+identify_driver = driver_person_info.loc[(driver_person_info['plate_number'].str.contains("H42W"))]
 display(identify_driver)
 
+#check if member and get member info
+get_fit_now_members.info()
+get_member_data = get_fit_now_members.loc[get_fit_now_members['person_id'].isin(identify_driver["id"])]
+display(get_member_data)
+
+#have they made a statemen?
+member_statement = interview.loc[interview['person_id'].isin(get_member_data['person_id'])]
+display(member_statement)
+
 # %%
-display(Markdown("## Clue 4"))
-display(
-    Markdown(
-        interview.loc[interview["person_id"].isin(suspect["person_id"])][
-            "transcript"
-        ].iloc[0]
-    )
-)
+display("## Clue 4")
+#clue 4
+display(member_statement)
+   
 
 # %%
 mastermind_concert = (
