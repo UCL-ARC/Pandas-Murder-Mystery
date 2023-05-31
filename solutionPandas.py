@@ -111,44 +111,35 @@ display("## Clue 4")
 #clue 4
 display(member_statement)
    
-
+#find driver of the tesla
 # %%
-mastermind_concert = (
+tesla_drivers = (
     drivers_license.loc[
         (drivers_license["height"].isin(range(65, 68)))
         & (drivers_license["car_make"] == "Tesla")
         & (drivers_license["hair_color"] == "red")
         & (drivers_license["gender"] == "female")
-    ]
-    .merge(person, left_on="id", right_on="license_id", suffixes=["_driver", "_person"])
-    .merge(
-        (
-            facebook_event_check_in.assign(
-                date=pd.to_datetime(facebook_event_check_in["date"], format="%Y%m%d")
-            )
-            .set_index("date")
-            .loc["12/2017"]
-            .reset_index()
-            .query("event_name == 'SQL Symphony Concert'")
-        ),
-        left_on="id_person",
-        right_on="person_id",
-    )
-)
+    ])
 
 # %%
-display(mastermind_concert)
+display(tesla_drivers)
+
+#merge info re: tesla driver registration with person data
+tesla_driver_person_info = pd.merge(person, tesla_drivers, on=['license_id'])
+
+#check to see who booked concert
+facebook_event_check_in.info()
+facebook_event_check_in.head()
+
+ driver_event_bookings = facebook_event_check_in.loc[facebook_event_check_in['person_id'].isin(tesla_driver_person_info['id'])]
+ display(driver_event_bookings)
 
 # %%
-mastermind = person.loc[
-    person["id"].isin(mastermind_concert.drop_duplicates()["person_id"])
-]
+suspect = person.loc[person['id'].isin(driver_event_bookings['person_id'])]
+display (suspect)
 
 # %%
-display(mastermind)
-
-# %%
-query = f"INSERT INTO solution VALUES (1, '{mastermind['name'].iloc[0]}');SELECT value FROM solution;"
+query = f"INSERT INTO solution VALUES (1, '{suspect['name'].iloc[0]}');SELECT value FROM solution;"
 print(query)
 
 # %% language="bash"
